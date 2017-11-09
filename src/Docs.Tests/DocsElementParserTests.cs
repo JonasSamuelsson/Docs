@@ -12,8 +12,8 @@ namespace Docs.Tests
       {
          var lines = new[]
          {
-            "<!-- <docs:foo /> -->",
-            "<!-- <docs:bar /> -->",
+            "<!--<docs:foo />-->",
+            "<!--<docs:bar />-->",
          };
 
          var element = new DocsElementParser().Parse(lines, "foo").Single();
@@ -28,10 +28,10 @@ namespace Docs.Tests
       {
          var lines = new[]
          {
-            "<!-- <docs:foo> -->",
-            "<!-- </docs:foo> -->",
-            "<!-- <docs:bar> -->",
-            "<!-- </docs:bar> -->"
+            "<!--<docs:foo>-->",
+            "<!--</docs:foo>-->",
+            "<!--<docs:bar>-->",
+            "<!--</docs:bar>-->"
          };
 
          var element = new DocsElementParser().Parse(lines, "foo").Single();
@@ -44,7 +44,7 @@ namespace Docs.Tests
       [Fact]
       public void ShouldThrowIfElementIsMissingClosingTag()
       {
-         var lines = new[] { "<!-- <docs:foo> -->" };
+         var lines = new[] { "<!--<docs:foo>-->" };
 
          Should.Throw<Exception>(() => new DocsElementParser().Parse(lines, "foo"));
       }
@@ -54,7 +54,7 @@ namespace Docs.Tests
       {
          var lines = new[]
          {
-            "<!-- <docs:foo a=\"b\" c=\"d\" /> -->"
+            "<!--<docs:foo a=\"b\" c=\"d\" />-->"
          };
 
          var element = new DocsElementParser().Parse(lines, "foo").Single();
@@ -68,9 +68,9 @@ namespace Docs.Tests
       {
          var lines = new[]
          {
-            "<!-- <docs:foo /> -->",
-            "<!-- <docs:foo a=\"b\" /> -->",
-            "<!-- <docs:foo b=\"c\" /> -->"
+            "<!--<docs:foo />-->",
+            "<!--<docs:foo a=\"b\" />-->",
+            "<!--<docs:foo b=\"c\" />-->"
          };
 
          new DocsElementParser().Parse(lines, "foo", "a").Single().Attributes["a"].ShouldBe("b");
