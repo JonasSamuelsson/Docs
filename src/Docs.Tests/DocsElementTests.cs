@@ -50,12 +50,27 @@ namespace Docs.Tests
       }
 
       [Fact]
+      public void ShouldFindElementWithAttributes()
+      {
+         var lines = new[]
+         {
+            "<!-- <docs:foo a=\"b\" c=\"d\" /> -->"
+         };
+
+         var element = DocsElement.Find(lines, "foo").Single();
+
+         element.Attributes["a"].ShouldBe("b");
+         element.Attributes["c"].ShouldBe("d");
+      }
+
+      [Fact]
       public void ShouldFindElementWithRequiredAttribute()
       {
          var lines = new[]
          {
             "<!-- <docs:foo /> -->",
-            "<!-- <docs:foo a=\"b\" /> -->"
+            "<!-- <docs:foo a=\"b\" /> -->",
+            "<!-- <docs:foo b=\"c\" /> -->"
          };
 
          DocsElement.Find(lines, "foo", "a").Single().Attributes["a"].ShouldBe("b");
