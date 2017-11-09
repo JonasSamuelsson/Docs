@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Docs.Tests
 {
-   public class DocsElementTests
+   public class DocsElementParserTests
    {
       [Fact]
       public void ShouldFindSelfClosingElement()
@@ -16,7 +16,7 @@ namespace Docs.Tests
             "<!-- <docs:bar /> -->",
          };
 
-         var element = DocsElement.Find(lines, "foo").Single();
+         var element = new DocsElementParser().Parse(lines, "foo").Single();
 
          element.Name.ShouldBe("foo");
          element.Line.ShouldBe(0);
@@ -34,7 +34,7 @@ namespace Docs.Tests
             "<!-- </docs:bar> -->"
          };
 
-         var element = DocsElement.Find(lines, "foo").Single();
+         var element = new DocsElementParser().Parse(lines, "foo").Single();
 
          element.Name.ShouldBe("foo");
          element.Line.ShouldBe(0);
@@ -46,18 +46,18 @@ namespace Docs.Tests
       {
          var lines = new[] { "<!-- <docs:foo> -->" };
 
-         Should.Throw<Exception>(() => DocsElement.Find(lines, "foo"));
+         Should.Throw<Exception>(() => new DocsElementParser().Parse(lines, "foo"));
       }
 
       [Fact]
-      public void ShouldFindElementWithAttributes()
+      public void ShouldGetElementAttributes()
       {
          var lines = new[]
          {
             "<!-- <docs:foo a=\"b\" c=\"d\" /> -->"
          };
 
-         var element = DocsElement.Find(lines, "foo").Single();
+         var element = new DocsElementParser().Parse(lines, "foo").Single();
 
          element.Attributes["a"].ShouldBe("b");
          element.Attributes["c"].ShouldBe("d");
@@ -73,7 +73,7 @@ namespace Docs.Tests
             "<!-- <docs:foo b=\"c\" /> -->"
          };
 
-         DocsElement.Find(lines, "foo", "a").Single().Attributes["a"].ShouldBe("b");
+         new DocsElementParser().Parse(lines, "foo", "a").Single().Attributes["a"].ShouldBe("b");
       }
    }
 }
