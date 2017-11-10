@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Docs
+namespace Docs.Utils
 {
    public class DocsElementWriter
    {

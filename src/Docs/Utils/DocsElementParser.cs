@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Docs
+namespace Docs.Utils
 {
-   public partial class DocsElementParser
+   public class DocsElementParser
    {
       public IReadOnlyList<DocsElement> Parse(IReadOnlyList<string> lines, string elementName, string attributeName = null)
       {
