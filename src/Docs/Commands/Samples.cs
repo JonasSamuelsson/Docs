@@ -3,6 +3,7 @@ using Docs.Utils;
 using Microsoft.Extensions.CommandLineUtils;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Docs.Commands
 {
@@ -41,7 +42,8 @@ namespace Docs.Commands
 
          public void Execute(string path)
          {
-            var srcPattern = "^(?<uri>.+)(#(?<section>.+))+$";
+            var srcPattern = @"^(?<uri>[^#]+)(#((name=(?<name>.+))|(lines=(?<from>\d+)((-(?<to>\d+))|(:(?<count>\d+))))))?$";
+
             var elementParser = new DocsElementParser();
             var elementWriter = new DocsElementWriter();
 
@@ -55,23 +57,35 @@ namespace Docs.Commands
 
                foreach (var sample in samples.Reverse())
                {
-                  var src = sample.Attributes["src"];
+                  var src = Regex.Match(sample.Attributes["src"], srcPattern);
+
+                  if (!src.Success)
+                     // todo better error message
+                     throw new AppException($"Invalid src '{src}'.");
+
+                  var uri = src.Groups["uri"].Value;
 
                   // todo - handle rooted ($/foo/bar.ext) & remote (http://...) uris
-                  // todo handle named samples
-                  // todo handle lines samples
 
-                  if (!Path.IsPathRooted(src))
+                  if (!Path.IsPathRooted(uri))
                   {
                      var dir = Path.GetDirectoryName(file);
-                     src = Path.Combine(dir, src);
+                     uri = Path.Combine(dir, uri);
                   }
 
-                  if (!_fileSystem.FileExists(src))
+                  if (!_fileSystem.FileExists(uri))
                      // todo better error message
-                     throw new AppException($"File not found ({src}).");
+                     throw new AppException($"File not found ({uri}).");
 
-                  var sampleContent = _fileSystem.ReadFile(src);
+                  var sampleContent = _fileSystem.ReadFile(uri);
+
+                  // todo handle named samples
+
+                  if (src.Groups["from"].Success)
+                  {
+                     // todo handle lines samples
+                  }
+
                   sampleContent.Insert(0, "```");
                   sampleContent.Add("```");
 
