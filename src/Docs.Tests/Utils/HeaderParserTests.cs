@@ -2,7 +2,7 @@ using Docs.Utils;
 using Shouldly;
 using Xunit;
 
-namespace Docs.Tests
+namespace Docs.Tests.Utils
 {
    public class HeaderParserTests
    {

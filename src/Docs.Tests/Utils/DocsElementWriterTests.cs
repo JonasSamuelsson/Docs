@@ -1,9 +1,9 @@
+using System.Collections.Generic;
 using Docs.Utils;
 using Shouldly;
-using System.Collections.Generic;
 using Xunit;
 
-namespace Docs.Tests
+namespace Docs.Tests.Utils
 {
    public class DocsElementWriterTests
    {
