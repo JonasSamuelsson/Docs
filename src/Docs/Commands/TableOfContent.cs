@@ -10,6 +10,9 @@ namespace Docs.Commands
    {
       public static void Configure(CommandLineApplication command)
       {
+         command.Description = "Generates a table of content using headers in the same file.";
+         command.HelpOption("-?|-h|--help").ShowInHelpText = false;
+
          var args = new
          {
             path = command.Argument("path", "Target file or filder.")

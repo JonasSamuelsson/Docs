@@ -6,7 +6,6 @@ namespace Docs.Commands
    {
       public static void Configure(CommandLineApplication command)
       {
-         throw new System.NotImplementedException();
       }
    }
 }
