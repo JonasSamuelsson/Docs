@@ -7,7 +7,12 @@ namespace Docs.Utils
 {
    public class DocsElementParser
    {
-      public IReadOnlyList<DocsElement> Parse(IReadOnlyList<string> lines, string elementName, string attributeName = null)
+      public IReadOnlyList<DocsElement> Parse(IReadOnlyList<string> lines, string elementName)
+      {
+         return Parse(lines, elementName, null);
+      }
+
+      public IReadOnlyList<DocsElement> Parse(IReadOnlyList<string> lines, string elementName, string attributeName)
       {
          var openPattern = @"^(?<indentation>\s*)<!--\s*<docs:(?<name>[a-z]+)(\s+(?<attribute>[a-z]+=""[^""]*""))*\s*(?<selfclosing>/)?>\s*-->\s*$";
          var attributePattern = @"(?<name>[a-z]+)=""(?<value>[^""]*)""";
