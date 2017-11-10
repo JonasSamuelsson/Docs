@@ -1,4 +1,5 @@
-﻿using Docs.FileSystem;
+﻿using System;
+using Docs.FileSystem;
 using Docs.Utils;
 using Microsoft.Extensions.CommandLineUtils;
 using System.IO;
@@ -79,18 +80,41 @@ namespace Docs.Commands
 
                   var sampleContent = _fileSystem.ReadFile(uri);
 
-                  // todo handle named samples
-
-                  if (src.Groups["from"].Success)
+                  var nameGroup = src.Groups["name"];
+                  if (nameGroup.Success)
                   {
-                     // todo handle lines samples
+                     // todo error handling
+                     var sampleElement = elementParser
+                        .Parse(sampleContent, "sample", "name")
+                        .Single(x => x.Attributes["name"].Equals(nameGroup.Value, StringComparison.OrdinalIgnoreCase));
+
+                     sampleContent = sampleContent
+                        .Skip(sampleElement.ContentLine)
+                        .Take(sampleElement.ContentLines)
+                        .ToList();
+                  }
+
+                  var fromGroup = src.Groups["from"];
+                  if (fromGroup.Success)
+                  {
+                     // todo error handling, count/to to big/small
+                     var from = int.Parse(fromGroup.Value) - 1;
+                     var countGroup = src.Groups["count"];
+                     var count = countGroup.Success
+                        ? int.Parse(countGroup.Value)
+                        : int.Parse(src.Groups["to"].Value) - from;
+
+                     sampleContent = sampleContent
+                        .Skip(from)
+                        .Take(count)
+                        .ToList();
                   }
 
                   sampleContent.Insert(0, "```");
                   sampleContent.Add("```");
 
-                  fileContent.RemoveRange(sample.Line, sample.Lines);
-                  fileContent.InsertRange(sample.Line, elementWriter.Write(sample, sampleContent));
+                  fileContent.RemoveRange(sample.ElementLine, sample.ElementLines);
+                  fileContent.InsertRange(sample.ElementLine, elementWriter.Write(sample, sampleContent));
                }
 
                // todo only write file if its acually modified

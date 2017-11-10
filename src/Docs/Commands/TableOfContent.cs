@@ -53,17 +53,17 @@ namespace Docs.Commands
                if (toc == null)
                   continue;
 
-               var headers = headerParser.Parse(lines.Skip(toc.Line));
+               var headers = headerParser.Parse(lines.Skip(toc.ElementLine));
 
                if (!headers.Any())
                   continue;
 
-               lines.RemoveRange(toc.Line, toc.Lines);
+               lines.RemoveRange(toc.ElementLine, toc.ElementLines);
 
                var minLevel = headers.Min(x => x.Level);
                headers.ForEach(x => x.Level -= minLevel);
                var tocContent = headers.Select(x => $"{Enumerable.Repeat("  ", x.Level).Join()}* [{x.Text}](#{x.Text})");
-               lines.InsertRange(toc.Line, new DocsElementWriter().Write(toc, tocContent));
+               lines.InsertRange(toc.ElementLine, new DocsElementWriter().Write(toc, tocContent));
 
                _fileSystem.WriteFile(file, lines);
             }

@@ -45,21 +45,21 @@ namespace Docs.Utils
                {
                   Attributes = attributes,
                   Indentation = match.Groups["indentation"].Value,
-                  Line = i,
+                  ElementLine = i,
                   Name = name
                };
 
                if (match.Groups["selfclosing"].Success)
                {
-                  element.Lines = 1;
+                  element.ElementLines = 1;
                   elements.Add(element);
                   continue;
                }
 
                while (true)
                {
-                  if (i++ == lines.Count)
-                     throw new AppException($"element {element.Name}@{element.Line} : closing tag not found");
+                  if (++i == lines.Count)
+                     throw new AppException($"element {element.Name}@{element.ElementLine} : closing tag not found");
 
                   line = lines[i];
                   match = Regex.Match(line, closePattern, options);
@@ -68,7 +68,7 @@ namespace Docs.Utils
                      break;
                }
 
-               element.Lines = 1 + i - element.Line;
+               element.ElementLines = 1 + i - element.ElementLine;
                elements.Add(element);
             }
          }

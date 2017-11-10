@@ -18,8 +18,8 @@ namespace Docs.Tests.Utils
                {"c", "d"},
             },
             Indentation = " ",
-            Line = 1,
-            Lines = 1,
+            ElementLine = 1,
+            ElementLines = 1,
             Name = "xyz"
          };
 

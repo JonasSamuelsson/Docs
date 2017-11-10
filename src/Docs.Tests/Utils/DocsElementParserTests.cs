@@ -20,8 +20,8 @@ namespace Docs.Tests.Utils
          var element = new DocsElementParser().Parse(lines, "foo").Single();
 
          element.Name.ShouldBe("foo");
-         element.Line.ShouldBe(0);
-         element.Lines.ShouldBe(1);
+         element.ElementLine.ShouldBe(0);
+         element.ElementLines.ShouldBe(1);
       }
 
       [Fact]
@@ -38,8 +38,8 @@ namespace Docs.Tests.Utils
          var element = new DocsElementParser().Parse(lines, "foo").Single();
 
          element.Name.ShouldBe("foo");
-         element.Line.ShouldBe(0);
-         element.Lines.ShouldBe(2);
+         element.ElementLine.ShouldBe(0);
+         element.ElementLines.ShouldBe(2);
       }
 
       [Fact]
