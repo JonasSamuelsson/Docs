@@ -62,7 +62,7 @@ namespace Docs.Commands
 
                var minLevel = headers.Min(x => x.Level);
                headers.ForEach(x => x.Level -= minLevel);
-               var tocContent = headers.Select(x => $"{Enumerable.Repeat("  ", x.Level).Join()}* [{x.Text}](#{x.Text})");
+               var tocContent = headers.Select(x => $"{Enumerable.Repeat("  ", x.Level).Join()}* [{x.Text}](#{x.Text.Replace(' ', '_')})");
                lines.InsertRange(toc.ElementLine, new DocsElementWriter().Write(toc, tocContent));
 
                _fileSystem.WriteFile(file, lines);
