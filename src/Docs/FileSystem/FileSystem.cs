@@ -11,9 +11,9 @@ namespace Docs.FileSystem
          return Directory.Exists(path);
       }
 
-      public IReadOnlyList<string> GetFiles(string path, string pattern)
+      public IReadOnlyList<string> GetFiles(string path, string pattern, SearchOption searchOption)
       {
-         return Directory.GetFiles(path, pattern, SearchOption.AllDirectories);
+         return Directory.GetFiles(path, pattern, searchOption);
       }
 
       public bool FileExists(string path)

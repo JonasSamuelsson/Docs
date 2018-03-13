@@ -18,7 +18,7 @@ namespace Docs.Utils
          return _fileSystem.FileExists(path)
             ? new[] { Path.GetFullPath(path) }
             : _fileSystem.DirectoryExists(path)
-               ? _fileSystem.GetFiles(path, "*.md")
+               ? _fileSystem.GetFiles(path, "*.md", SearchOption.AllDirectories)
                : throw new AppException("path not found");
       }
    }

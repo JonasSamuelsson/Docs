@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Docs.FileSystem;
 
@@ -14,7 +15,7 @@ namespace Docs.Tests.Commands
          throw new System.NotImplementedException();
       }
 
-      public IReadOnlyList<string> GetFiles(string path, string pattern)
+      public IReadOnlyList<string> GetFiles(string path, string pattern, SearchOption searchOption)
       {
          throw new System.NotImplementedException();
       }
