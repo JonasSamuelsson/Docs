@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Docs.FileSystem;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Docs.FileSystem;
+using System.Text.RegularExpressions;
 
-namespace Docs.Tests.Commands
+namespace Docs.Tests
 {
    public class TestFileSystem : IFileSystem
    {
@@ -12,12 +13,32 @@ namespace Docs.Tests.Commands
 
       public bool DirectoryExists(string path)
       {
-         throw new System.NotImplementedException();
+         foreach (var file in Files.Keys)
+         {
+            var dir = Path.GetDirectoryName(file);
+            if (dir.Equals(path, StringComparison.OrdinalIgnoreCase))
+               return true;
+         }
+
+         return false;
       }
 
       public IReadOnlyList<string> GetFiles(string path, string pattern, SearchOption searchOption)
       {
-         throw new System.NotImplementedException();
+         path = path.TrimEnd('\\') + "\\";
+         pattern = Regex.Escape(pattern).Replace("\\*", ".*");
+
+         var files = Files.Keys.Where(x => x.StartsWith(path));
+
+         files = files.Where(x => Regex.IsMatch(Path.GetFileName(x), $"^{pattern}$", RegexOptions.IgnoreCase));
+
+         if (searchOption == SearchOption.TopDirectoryOnly)
+         {
+            path = path.TrimEnd('\\');
+            files = files.Where(x => Path.GetDirectoryName(x).Equals(path, StringComparison.OrdinalIgnoreCase));
+         }
+
+         return files.ToList();
       }
 
       public bool FileExists(string path)
