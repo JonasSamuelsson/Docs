@@ -20,7 +20,7 @@ namespace Docs.Utils
 
          for (var dir = GetDirectory(path); dir != null; dir = Path.GetDirectoryName(dir))
          {
-            var file = _fileSystem.GetFiles(path, fileName, SearchOption.TopDirectoryOnly).FirstOrDefault();
+            var file = _fileSystem.GetFiles(dir, fileName, SearchOption.TopDirectoryOnly).FirstOrDefault();
 
             if (file == null)
                continue;
@@ -40,8 +40,8 @@ namespace Docs.Utils
                if (items[0] != "root")
                   continue;
 
-               return items.Length == 2
-                  ? items[1]
+               return items.Length == 2 && bool.TryParse(items[1], out var result) && result
+                  ? dir
                   : throw new AppException("Invalid config.");
             }
          }
