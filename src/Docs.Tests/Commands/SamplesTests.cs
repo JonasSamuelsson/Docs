@@ -112,7 +112,7 @@ namespace Docs.Tests.Commands
       }
 
       [Fact]
-      public void ShouldImportLineCountSamples()
+      public void ShouldImportSingleLineSamples()
       {
          var fs = new TestFileSystem
          {
@@ -127,7 +127,7 @@ namespace Docs.Tests.Commands
                {@"x:\target.md", new[]
                {
                   "a",
-                  "<!--<docs-sample src=\"source.txt#lines=2:1\"/>-->",
+                  "<!--<docs-sample src=\"source.txt#lines=2\"/>-->",
                   "b"
                }}
             }
@@ -138,7 +138,7 @@ namespace Docs.Tests.Commands
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
             "a",
-            "<!--<docs-sample src=\"source.txt#lines=2:1\">-->",
+            "<!--<docs-sample src=\"source.txt#lines=2\">-->",
             "```",
             "sample content",
             "```",

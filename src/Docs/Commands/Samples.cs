@@ -1,7 +1,7 @@
-﻿using System;
-using Docs.FileSystem;
+﻿using Docs.FileSystem;
 using Docs.Utils;
 using Microsoft.Extensions.CommandLineUtils;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -43,7 +43,7 @@ namespace Docs.Commands
 
          public void Execute(string path)
          {
-            var srcPattern = @"^(?<uri>[^#]+)(#((name=(?<name>.+))|(lines=(?<from>\d+)((-(?<to>\d+))|(:(?<count>\d+))))))?$";
+            var srcPattern = @"^(?<uri>[^#]+)(#((name=(?<name>.+))|(lines=(?<from>\d+)((-(?<to>\d+))?))))?$";
 
             var elementParser = new DocsElementParser();
             var elementWriter = new DocsElementWriter();
@@ -99,10 +99,10 @@ namespace Docs.Commands
                   {
                      // todo error handling, count/to to big/small
                      var from = int.Parse(fromGroup.Value) - 1;
-                     var countGroup = src.Groups["count"];
-                     var count = countGroup.Success
-                        ? int.Parse(countGroup.Value)
-                        : int.Parse(src.Groups["to"].Value) - from;
+                     var toGroup = src.Groups["to"];
+                     var count = toGroup.Success
+                        ? int.Parse(toGroup.Value) - from
+                        : 1;
 
                      sampleContent = sampleContent
                         .Skip(from)

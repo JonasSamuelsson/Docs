@@ -19,8 +19,10 @@ The target file should countain a docs sample tag
 import everything from source.txt
 * `<!--<docs-sample src="source.txt#name=x"/>-->`  
 import sample named x from source.txt
-* `<!--<docs-sample src="source.txt#lines=2-3"/>-->`  
-import lines 2 to 3 from source.txt
+* `<!--<docs-sample src="source.txt#lines=2"/>-->`  
+import line 2 from source.txt
+* `<!--<docs-sample src="source.txt#lines=3-5"/>-->`  
+import lines 3 to 5 from source.txt
 
 A named sample should have the following format
 ```
