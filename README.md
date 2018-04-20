@@ -30,3 +30,14 @@ A named sample should have the following format
 named sample content
 <!--</docs-sample>-->
 ```
+
+## Table of content
+
+docs.exe can generate tables of content from headers in a file.
+
+```
+syntax: docs.exe toc <target>
+
+args:
+  target: file or folder to generate table of content in
+```
