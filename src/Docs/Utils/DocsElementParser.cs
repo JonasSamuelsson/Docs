@@ -14,9 +14,9 @@ namespace Docs.Utils
 
       public IReadOnlyList<DocsElement> Parse(IReadOnlyList<string> lines, string elementName, string attributeName)
       {
-         var openPattern = @"^(?<indentation>\s*)<!--\s*<docs:(?<name>[a-z]+)(\s+(?<attribute>[a-z]+=""[^""]*""))*\s*(?<selfclosing>/)?>\s*-->\s*$";
+         var openPattern = @"^(?<indentation>\s*)<!--\s*<docs-(?<name>[a-z]+)(\s+(?<attribute>[a-z]+=""[^""]*""))*\s*(?<selfclosing>/)?>\s*-->\s*$";
          var attributePattern = @"(?<name>[a-z]+)=""(?<value>[^""]*)""";
-         var closePattern = @"^\s*<!--\s*</docs:(?<name>[a-z]+)\s*>\s*-->\s*$";
+         var closePattern = @"^\s*<!--\s*</docs-(?<name>[a-z]+)\s*>\s*-->\s*$";
          var options = RegexOptions.IgnoreCase;
          var comparison = StringComparison.OrdinalIgnoreCase;
 

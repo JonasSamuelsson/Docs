@@ -1,38 +1,30 @@
 # docs
 
-docs is a tool for auto generating documentation
+docs.exe is a tool that can help writing documentation in markdown (.md) files.
 
 ## Samples
 
 docs.exe can import samples from other files
 
-`c:\source.txt`
 ```
-1
-<!--<docs:sample name="x">-->
-2
-<!--</docs:sample>-->
+syntax: docs.exe sample <target>
+
+args:
+  target: file or folder to import samples into
 ```
 
-`c:\target.md`
-```
-look at this sample
-<!--<docs:sample src="source.txt"/>-->
-<!--<docs:sample src="source.txt#name=x"/>-->
-<!--<docs:sample src="source.txt#lines=3:1"/>-->
-<!--<docs:sample src="source.txt#lines=3-3"/>-->
-doesn't it look great
-```
+The target file should countain a docs sample tag
 
-run `docs.exe sample c:\target.md`
+* `<!--<docs-sample src="source.txt"/>-->`  
+import everything from source.txt
+* `<!--<docs-sample src="source.txt#name=x"/>-->`  
+import sample named x from source.txt
+* `<!--<docs-sample src="source.txt#lines=2-3"/>-->`  
+import lines 2 to 3 from source.txt
 
-`c:\target.txt`
+A named sample should have the following format
 ```
-look at this sample
-<!--<docs:sample src="source.txt">-->
-``
-sample content
-``
-<!--<docs:sample src="source.txt">-->
-doesn't it look great
+<!--<docs-sample name="x">-->
+named sample content
+<!--</docs-sample>-->
 ```
