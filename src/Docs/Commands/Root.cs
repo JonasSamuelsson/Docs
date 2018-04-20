@@ -6,7 +6,6 @@ namespace Docs.Commands
    {
       public Root()
       {
-         Command("link-list", LinkList.Configure);
          Command("samples", Samples.Configure);
          Command("toc", TableOfContent.Configure);
 
