@@ -37,16 +37,22 @@ namespace Docs.Utils
                   .Select(x => x.Trim())
                   .ToArray();
 
-               if (items[0] != "root")
+               if (items[0] != "samples.dir")
                   continue;
 
-               return items.Length == 2 && bool.TryParse(items[1], out var result) && result
-                  ? dir
-                  : throw new AppException("Invalid config.");
+               if (items.Length != 2)
+                  throw new AppException("Invalid config.");
+
+               var samplesDir = items[1];
+
+               if (!Path.IsPathRooted(samplesDir))
+                  samplesDir = Path.Combine(dir, samplesDir);
+
+               return Path.GetFullPath(samplesDir);
             }
          }
 
-         throw new AppException("Root directory not found.");
+         throw new AppException("Samples root directory not found.");
       }
 
       private string GetDirectory(string path)

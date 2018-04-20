@@ -154,7 +154,7 @@ namespace Docs.Tests.Commands
          {
             Files =
             {
-               {@"x:\root\.docsconfig.", new[] {"root:true"}},
+               {@"x:\root\.docsconfig.", new[] {"samples.dir:."}},
                {@"x:\root\sample.txt", new[] {"success"}},
                {@"x:\root\child\target.md", new[] {"<!--<docs-sample src=\"$\\sample.txt\"/>-->"}}
             }
