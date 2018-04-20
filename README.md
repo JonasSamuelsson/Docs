@@ -7,7 +7,7 @@ docs.exe is a tool that can help writing documentation in markdown (.md) files.
 docs.exe can import samples from other files
 
 ```
-syntax: docs.exe sample <target>
+syntax: docs.exe samples <target>
 
 args:
   target: file or folder to import samples into
