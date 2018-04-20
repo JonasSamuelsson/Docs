@@ -10,7 +10,7 @@ namespace Docs.Commands
    {
       public static void Configure(CommandLineApplication command)
       {
-         command.Description = "Generates a table of content using headers.";
+         command.Description = "Generates table of content from headers.";
          command.HelpOption("-?|-h|--help").ShowInHelpText = false;
 
          var args = new

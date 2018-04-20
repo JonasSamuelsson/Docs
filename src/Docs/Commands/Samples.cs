@@ -12,7 +12,7 @@ namespace Docs.Commands
    {
       public static void Configure(CommandLineApplication command)
       {
-         command.Description = "Imports sample code.";
+         command.Description = "Import samples.";
          command.HelpOption("-?|-h|--help").ShowInHelpText = false;
 
          var args = new
