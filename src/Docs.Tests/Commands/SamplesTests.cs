@@ -146,5 +146,30 @@ namespace Docs.Tests.Commands
             "b"
          });
       }
+
+      [Fact]
+      public void ShouldImportSampleWithRootedSrcPath()
+      {
+         var fs = new TestFileSystem
+         {
+            Files =
+            {
+               {@"x:\root\.docsconfig.", new[] {"root:true"}},
+               {@"x:\root\sample.txt", new[] {"success"}},
+               {@"x:\root\child\target.md", new[] {"<!--<docs-sample src=\"$\\sample.txt\"/>-->"}}
+            }
+         };
+
+         new Samples.Worker(fs).Execute(@"x:\root\child\target.md");
+
+         fs.Files[@"x:\root\child\target.md"].ShouldBe(new[]
+         {
+            "<!--<docs-sample src=\"$\\sample.txt\">-->",
+            "```",
+            "success",
+            "```",
+            "<!--</docs-sample>-->"
+         });
+      }
    }
 }

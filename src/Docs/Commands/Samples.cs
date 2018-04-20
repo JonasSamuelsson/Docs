@@ -31,6 +31,7 @@ namespace Docs.Commands
       public class Worker
       {
          private readonly IFileSystem _fileSystem;
+         private readonly RootDirectoryResolver _rootDirectoryResolver;
 
          public Worker() : this(new FileSystem.FileSystem())
          {
@@ -39,6 +40,7 @@ namespace Docs.Commands
          public Worker(IFileSystem fileSystem)
          {
             _fileSystem = fileSystem;
+            _rootDirectoryResolver = new RootDirectoryResolver(fileSystem);
          }
 
          public void Execute(string path)
@@ -67,6 +69,12 @@ namespace Docs.Commands
                   var uri = src.Groups["uri"].Value;
 
                   // todo - handle rooted ($/foo/bar.ext) & remote (http://...) uris
+
+                  if (uri.StartsWith(@"$/") || uri.StartsWith(@"$\"))
+                  {
+                     var rootDirectory = _rootDirectoryResolver.GetRootDirectory(file);
+                     uri = Path.Combine(rootDirectory, uri.Remove(0, 2));
+                  }
 
                   if (!Path.IsPathRooted(uri))
                   {
