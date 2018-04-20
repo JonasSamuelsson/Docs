@@ -17,7 +17,7 @@ The target file should countain a docs sample tag
 
 * `<!--<docs-sample src="source.txt"/>-->`  
 import everything from source.txt
-* `<!--<docs-sample src="source.txt#name=x"/>-->`  
+* `<!--<docs-sample src="source.txt#id=x"/>-->`  
 import sample named x from source.txt
 * `<!--<docs-sample src="source.txt#lines=2"/>-->`  
 import line 2 from source.txt
@@ -26,7 +26,7 @@ import lines 3 to 5 from source.txt
 
 A named sample should have the following format
 ```
-<!--<docs-sample name="x">-->
+<!--<docs-sample id="x">-->
 named sample content
 <!--</docs-sample>-->
 ```

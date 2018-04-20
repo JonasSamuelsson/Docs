@@ -43,7 +43,7 @@ namespace Docs.Commands
 
          public void Execute(string path)
          {
-            var srcPattern = @"^(?<uri>[^#]+)(#((name=(?<name>.+))|(lines=(?<from>\d+)((-(?<to>\d+))?))))?$";
+            var srcPattern = @"^(?<uri>[^#]+)(#((id=(?<id>.+))|(lines=(?<from>\d+)((-(?<to>\d+))?))))?$";
 
             var elementParser = new DocsElementParser();
             var elementWriter = new DocsElementWriter();
@@ -80,13 +80,13 @@ namespace Docs.Commands
 
                   var sampleContent = _fileSystem.ReadFile(uri);
 
-                  var nameGroup = src.Groups["name"];
-                  if (nameGroup.Success)
+                  var idGroup = src.Groups["id"];
+                  if (idGroup.Success)
                   {
                      // todo error handling
                      var sampleElement = elementParser
-                        .Parse(sampleContent, "sample", "name")
-                        .Single(x => x.Attributes["name"].Equals(nameGroup.Value, StringComparison.OrdinalIgnoreCase));
+                        .Parse(sampleContent, "sample", "id")
+                        .Single(x => x.Attributes["id"].Equals(idGroup.Value, StringComparison.OrdinalIgnoreCase));
 
                      sampleContent = sampleContent
                         .Skip(sampleElement.ContentLine)

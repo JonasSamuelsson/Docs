@@ -47,7 +47,7 @@ namespace Docs.Tests.Commands
                {@"x:\source.txt", new[]
                {
                   "x",
-                  "<!--<docs-sample name=\"foo\">-->",
+                  "<!--<docs-sample id=\"foo\">-->",
                   "sample content",
                   "<!--</docs-sample>-->",
                   "y"
@@ -55,7 +55,7 @@ namespace Docs.Tests.Commands
                {@"x:\target.md", new[]
                {
                   "a",
-                  "<!--<docs-sample src=\"source.txt#name=foo\"/>-->",
+                  "<!--<docs-sample src=\"source.txt#id=foo\"/>-->",
                   "b"
                }}
             }
@@ -66,7 +66,7 @@ namespace Docs.Tests.Commands
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
             "a",
-            "<!--<docs-sample src=\"source.txt#name=foo\">-->",
+            "<!--<docs-sample src=\"source.txt#id=foo\">-->",
             "```",
             "sample content",
             "```",
