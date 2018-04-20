@@ -45,7 +45,7 @@ namespace Docs.Commands
 
          public void Execute(string path)
          {
-            var srcPattern = @"^(?<uri>[^#]+)(#((id=(?<id>.+))|(lines=(?<from>\d+)((-(?<to>\d+))?))))?$";
+            var srcPattern = @"^(?<uri>[^#]+)(#((id=(?<id>.+))|(lines=(?<from>\d+)((-(?<to>\d+))?)))?(lang=(?<language>.+))?)?$";
 
             var elementParser = new DocsElementParser();
             var elementWriter = new DocsElementWriter();
@@ -118,7 +118,10 @@ namespace Docs.Commands
                         .ToList();
                   }
 
-                  sampleContent.Insert(0, "```");
+                  var languageGroup = src.Groups["language"];
+                  var language = languageGroup.Success ? languageGroup.Value : string.Empty;
+
+                  sampleContent.Insert(0, $"``` {language}".TrimEnd());
                   sampleContent.Add("```");
 
                   fileContent.RemoveRange(sample.ElementLine, sample.ElementLines);

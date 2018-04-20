@@ -31,6 +31,11 @@ named sample content
 <!--</docs-sample>-->
 ```
 
+There is also support for specifying a language to enable syntax highlighting within samples.
+```
+<!--<docs-sample src="source.txt#lang=csharp"/>-->
+```
+
 ## Table of content
 
 docs.exe can generate tables of content from headers in a file.

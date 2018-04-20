@@ -171,5 +171,29 @@ namespace Docs.Tests.Commands
             "<!--</docs-sample>-->"
          });
       }
+
+      [Fact]
+      public void ShouldAddSpecifiedLanguageToSample()
+      {
+         var fs = new TestFileSystem
+         {
+            Files =
+            {
+               {@"x:\sample.txt", new[] {"success"}},
+               {@"x:\target.md", new[] {"<!--<docs-sample src=\"sample.txt#lang=foobar\"/>-->"}}
+            }
+         };
+
+         new Samples.Worker(fs).Execute(@"x:\target.md");
+
+         fs.Files[@"x:\target.md"].ShouldBe(new[]
+         {
+            "<!--<docs-sample src=\"sample.txt#lang=foobar\">-->",
+            "``` foobar",
+            "success",
+            "```",
+            "<!--</docs-sample>-->"
+         });
+      }
    }
 }
