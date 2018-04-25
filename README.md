@@ -67,7 +67,7 @@ Table of content will be generated for files containing this tag `<!--<docs-toc 
 ## Settings file
 
 Settings files are files named `.docs`, resolved from the current/parent folders of the file being processes.  
-Given the following file structure `file1.md` & `file2.md` would both resolve `x:\.docs` and `file3.md` would resolve `x:\foo\bar\.docs`.
+Given the following file structure `file1.md` & `file2.md` would both use `x:\.docs` and `file3.md` would use `x:\foo\bar\.docs`.
 ```
 x:\.docs
 x:\file1.md
