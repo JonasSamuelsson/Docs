@@ -30,7 +30,7 @@ The root folder is retrived from setting `samples.dir` in the [settings file](#s
 
 Source tag containing a `lines` parameter `src="sample.txt#lines=3-5"` would only import lines 3 to 5.
 
-Source tags containing a `id` parameter `src="sample.txt#id=foo"` would import a sample named `foo` from `sample.txt`.
+Source tags containing a `id` parameter `src="sample.txt#id=foo"` would import a sample named `foo`.
 
 sample.txt:
 ```
@@ -47,7 +47,7 @@ Sample language are supported at 3 levels; inline, settings file, defaults.
 
 The source tag supports a `language` parameter.
 
-The [settings file](#settings-file) supports file extension to language mappings `samples.languages.cs:csharp`.
+The [settings file](#settings-file) supports file extension to language mappings as `samples.languages.{extension}:{language}`.
 
 There are some build in file extension to language mappings.
 
