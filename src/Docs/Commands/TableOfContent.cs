@@ -2,6 +2,7 @@
 using Docs.Utils;
 using Handyman.Extensions;
 using Microsoft.Extensions.CommandLineUtils;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Docs.Commands
@@ -62,10 +63,32 @@ namespace Docs.Commands
 
                var minLevel = headers.Min(x => x.Level);
                headers.ForEach(x => x.Level -= minLevel);
-               var tocContent = headers.Select(x => $"{Enumerable.Repeat("  ", x.Level).Join()}* [{x.Text}](#{x.Text.Replace(' ', '_')})");
+               var formatter = new LinkFormatter();
+               var tocContent = headers.Select(x => $"{Enumerable.Repeat("  ", x.Level).Join()}* {formatter.Format(x.Text)}");
                lines.InsertRange(toc.ElementLine, new DocsElementWriter().Write(toc, tocContent));
 
                _fileSystem.WriteFile(file, lines);
+            }
+         }
+
+         public class LinkFormatter
+         {
+            private readonly List<string> _history = new List<string>();
+
+            public string Format(string text)
+            {
+               var chars = text
+                  .ToLower()
+                  .Select(c => c)
+                  .Where(c => c == ' ' || c == '-' || char.IsLetterOrDigit(c));
+
+               var link = string.Join(string.Empty, chars).Replace(" ", "-");
+
+               _history.Add(link);
+               var count = _history.Count(x => x == link);
+               if (count > 1) link += $"-{count - 1}";
+
+               return $"[{text}](#{link})";
             }
          }
       }
