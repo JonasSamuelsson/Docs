@@ -154,7 +154,7 @@ namespace Docs.Tests.Commands
          {
             Files =
             {
-               {@"x:\root\.docsconfig.", new[] {"samples.dir:."}},
+               {@"x:\root\.docs.", new[] {"samples.dir:."}},
                {@"x:\root\sample.txt", new[] {"success"}},
                {@"x:\root\child\target.md", new[] {"<!--<docs-sample src=\"$\\sample.txt\"/>-->"}}
             }
@@ -173,14 +173,14 @@ namespace Docs.Tests.Commands
       }
 
       [Fact]
-      public void ShouldAddSpecifiedLanguageToSample()
+      public void ShouldDeriveSampleLanguageFromExtension()
       {
          var fs = new TestFileSystem
          {
             Files =
             {
-               {@"x:\sample.txt", new[] {"success"}},
-               {@"x:\target.md", new[] {"<!--<docs-sample src=\"sample.txt#lang=foobar\"/>-->"}}
+               {@"x:\sample.cs", new[] {"success"}},
+               {@"x:\target.md", new[] {"<!--<docs-sample src=\"sample.cs\"/>-->"}}
             }
          };
 
@@ -188,7 +188,56 @@ namespace Docs.Tests.Commands
 
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
-            "<!--<docs-sample src=\"sample.txt#lang=foobar\">-->",
+            "<!--<docs-sample src=\"sample.cs\">-->",
+            "``` cs",
+            "success",
+            "```",
+            "<!--</docs-sample>-->"
+         });
+      }
+
+      [Fact]
+      public void ShouldDeriveSampleLanguageFromExtensionAndSettings()
+      {
+         var fs = new TestFileSystem
+         {
+            Files =
+            {
+               {@"x:\.docs.", new[] {"samples.languages.cs:override"}},
+               {@"x:\sample.cs", new[] {"success"}},
+               {@"x:\target.md", new[] {"<!--<docs-sample src=\"sample.cs\"/>-->"}}
+            }
+         };
+
+         new Samples.Worker(fs).Execute(@"x:\target.md");
+
+         fs.Files[@"x:\target.md"].ShouldBe(new[]
+         {
+            "<!--<docs-sample src=\"sample.cs\">-->",
+            "``` override",
+            "success",
+            "```",
+            "<!--</docs-sample>-->"
+         });
+      }
+
+      [Fact]
+      public void ShouldAddSpecifiedLanguageToSample()
+      {
+         var fs = new TestFileSystem
+         {
+            Files =
+            {
+               {@"x:\sample.txt", new[] {"success"}},
+               {@"x:\target.md", new[] {"<!--<docs-sample src=\"sample.txt#language=foobar\"/>-->"}}
+            }
+         };
+
+         new Samples.Worker(fs).Execute(@"x:\target.md");
+
+         fs.Files[@"x:\target.md"].ShouldBe(new[]
+         {
+            "<!--<docs-sample src=\"sample.txt#language=foobar\">-->",
             "``` foobar",
             "success",
             "```",

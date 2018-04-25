@@ -2,6 +2,7 @@
 using Docs.Utils;
 using Microsoft.Extensions.CommandLineUtils;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -31,7 +32,7 @@ namespace Docs.Commands
       public class Worker
       {
          private readonly IFileSystem _fileSystem;
-         private readonly RootDirectoryResolver _rootDirectoryResolver;
+         private readonly SettingsReader _settingsReader;
 
          public Worker() : this(new FileSystem.FileSystem())
          {
@@ -40,12 +41,12 @@ namespace Docs.Commands
          public Worker(IFileSystem fileSystem)
          {
             _fileSystem = fileSystem;
-            _rootDirectoryResolver = new RootDirectoryResolver(fileSystem);
+            _settingsReader = new SettingsReader(fileSystem);
          }
 
          public void Execute(string path)
          {
-            var srcPattern = @"^(?<uri>[^#]+)(#((id=(?<id>.+))|(lines=(?<from>\d+)((-(?<to>\d+))?)))?(lang=(?<language>.+))?)?$";
+            var srcPattern = @"^(?<uri>[^#]+)(#((id=(?<id>.+))|(lines=(?<from>\d+)((-(?<to>\d+))?)))?(language=(?<language>.+))?)?$";
 
             var elementParser = new DocsElementParser();
             var elementWriter = new DocsElementWriter();
@@ -72,7 +73,7 @@ namespace Docs.Commands
 
                   if (uri.StartsWith(@"$/") || uri.StartsWith(@"$\"))
                   {
-                     var rootDirectory = _rootDirectoryResolver.GetRootDirectory(file);
+                     var rootDirectory = _settingsReader.GetSamplesDirectory(file);
                      uri = Path.Combine(rootDirectory, uri.Remove(0, 2));
                   }
 
@@ -119,7 +120,9 @@ namespace Docs.Commands
                   }
 
                   var languageGroup = src.Groups["language"];
-                  var language = languageGroup.Success ? languageGroup.Value : string.Empty;
+                  var language = languageGroup.Success
+                     ? languageGroup.Value
+                     : GetLanguage(uri);
 
                   sampleContent.Insert(0, $"``` {language}".TrimEnd());
                   sampleContent.Add("```");
@@ -135,6 +138,22 @@ namespace Docs.Commands
                // todo write feedback
             }
          }
+
+         private string GetLanguage(string uri)
+         {
+            var extension = Path.GetExtension(uri);
+            return _settingsReader.TryGetSampleLanguage(uri, extension, out var language)
+               ? language
+               : Languages.TryGetValue(extension, out language)
+                  ? language
+                  : string.Empty;
+         }
       }
+
+      private static readonly Dictionary<string, string> Languages =
+         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+         {
+            {".cs", "cs"}
+         };
    }
 }

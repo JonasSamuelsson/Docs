@@ -35,6 +35,7 @@ namespace Docs.Tests
          if (searchOption == SearchOption.TopDirectoryOnly)
          {
             path = path.TrimEnd('\\');
+            if (path.EndsWith(":")) path += @"\";
             files = files.Where(x => Path.GetDirectoryName(x).Equals(path, StringComparison.OrdinalIgnoreCase));
          }
 
