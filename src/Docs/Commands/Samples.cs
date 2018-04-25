@@ -153,7 +153,19 @@ namespace Docs.Commands
       private static readonly Dictionary<string, string> Languages =
          new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
          {
-            {".cs", "cs"}
+            {".bat", "bat"},
+            {".cmd", "cmd"},
+            {".cs", "cs"},
+            {".css", "css"},
+            {".csx", "cs"},
+            {".html", "html"},
+            {".ini", "ini"},
+            {".js", "js"},
+            {".json", "json"},
+            {".less", "less"},
+            {".ps", "ps"},
+            {".ts", "ts"},
+            {".xml", "xml"}
          };
    }
 }
