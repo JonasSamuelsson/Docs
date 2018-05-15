@@ -17,7 +17,7 @@ namespace Docs.Tests.Commands
                {@"x:\target.md", new[]
                {
                   "a",
-                  "<!--<docs-sample src=\"source.txt\"/>-->",
+                  "[//]: # (<docs-sample src=\"source.txt\"/>)",
                   "b"
                }}
             }
@@ -28,11 +28,11 @@ namespace Docs.Tests.Commands
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
             "a",
-            "<!--<docs-sample src=\"source.txt\">-->",
+            "[//]: # (<docs-sample src=\"source.txt\">)",
             "```",
             "sample content",
             "```",
-            "<!--</docs-sample>-->",
+            "[//]: # (</docs-sample>)",
             "b"
          });
       }
@@ -47,15 +47,15 @@ namespace Docs.Tests.Commands
                {@"x:\source.txt", new[]
                {
                   "x",
-                  "<!--<docs-sample id=\"foo\">-->",
+                  "[//]: # (<docs-sample id=\"foo\">)",
                   "sample content",
-                  "<!--</docs-sample>-->",
+                  "[//]: # (</docs-sample>)",
                   "y"
                }},
                {@"x:\target.md", new[]
                {
                   "a",
-                  "<!--<docs-sample src=\"source.txt#id=foo\"/>-->",
+                  "[//]: # (<docs-sample src=\"source.txt#id=foo\"/>)",
                   "b"
                }}
             }
@@ -66,11 +66,11 @@ namespace Docs.Tests.Commands
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
             "a",
-            "<!--<docs-sample src=\"source.txt#id=foo\">-->",
+            "[//]: # (<docs-sample src=\"source.txt#id=foo\">)",
             "```",
             "sample content",
             "```",
-            "<!--</docs-sample>-->",
+            "[//]: # (</docs-sample>)",
             "b"
          });
       }
@@ -91,7 +91,7 @@ namespace Docs.Tests.Commands
                {@"x:\target.md", new[]
                {
                   "a",
-                  "<!--<docs-sample src=\"source.txt#lines=2-2\"/>-->",
+                  "[//]: # (<docs-sample src=\"source.txt#lines=2-2\"/>)",
                   "b"
                }}
             }
@@ -102,11 +102,11 @@ namespace Docs.Tests.Commands
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
             "a",
-            "<!--<docs-sample src=\"source.txt#lines=2-2\">-->",
+            "[//]: # (<docs-sample src=\"source.txt#lines=2-2\">)",
             "```",
             "sample content",
             "```",
-            "<!--</docs-sample>-->",
+            "[//]: # (</docs-sample>)",
             "b"
          });
       }
@@ -127,7 +127,7 @@ namespace Docs.Tests.Commands
                {@"x:\target.md", new[]
                {
                   "a",
-                  "<!--<docs-sample src=\"source.txt#lines=2\"/>-->",
+                  "[//]: # (<docs-sample src=\"source.txt#lines=2\"/>)",
                   "b"
                }}
             }
@@ -138,11 +138,11 @@ namespace Docs.Tests.Commands
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
             "a",
-            "<!--<docs-sample src=\"source.txt#lines=2\">-->",
+            "[//]: # (<docs-sample src=\"source.txt#lines=2\">)",
             "```",
             "sample content",
             "```",
-            "<!--</docs-sample>-->",
+            "[//]: # (</docs-sample>)",
             "b"
          });
       }
@@ -156,7 +156,7 @@ namespace Docs.Tests.Commands
             {
                {@"x:\root\.docs.", new[] {"samples.dir:."}},
                {@"x:\root\sample.txt", new[] {"success"}},
-               {@"x:\root\child\target.md", new[] {"<!--<docs-sample src=\"$\\sample.txt\"/>-->"}}
+               {@"x:\root\child\target.md", new[] {"[//]: # (<docs-sample src=\"$\\sample.txt\"/>)"}}
             }
          };
 
@@ -164,11 +164,11 @@ namespace Docs.Tests.Commands
 
          fs.Files[@"x:\root\child\target.md"].ShouldBe(new[]
          {
-            "<!--<docs-sample src=\"$\\sample.txt\">-->",
+            "[//]: # (<docs-sample src=\"$\\sample.txt\">)",
             "```",
             "success",
             "```",
-            "<!--</docs-sample>-->"
+            "[//]: # (</docs-sample>)"
          });
       }
 
@@ -180,7 +180,7 @@ namespace Docs.Tests.Commands
             Files =
             {
                {@"x:\sample.cs", new[] {"success"}},
-               {@"x:\target.md", new[] {"<!--<docs-sample src=\"sample.cs\"/>-->"}}
+               {@"x:\target.md", new[] {"[//]: # (<docs-sample src=\"sample.cs\"/>)"}}
             }
          };
 
@@ -188,11 +188,11 @@ namespace Docs.Tests.Commands
 
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
-            "<!--<docs-sample src=\"sample.cs\">-->",
+            "[//]: # (<docs-sample src=\"sample.cs\">)",
             "``` cs",
             "success",
             "```",
-            "<!--</docs-sample>-->"
+            "[//]: # (</docs-sample>)"
          });
       }
 
@@ -205,7 +205,7 @@ namespace Docs.Tests.Commands
             {
                {@"x:\.docs.", new[] {"samples.languages.cs:override"}},
                {@"x:\sample.cs", new[] {"success"}},
-               {@"x:\target.md", new[] {"<!--<docs-sample src=\"sample.cs\"/>-->"}}
+               {@"x:\target.md", new[] {"[//]: # (<docs-sample src=\"sample.cs\"/>)"}}
             }
          };
 
@@ -213,11 +213,11 @@ namespace Docs.Tests.Commands
 
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
-            "<!--<docs-sample src=\"sample.cs\">-->",
+            "[//]: # (<docs-sample src=\"sample.cs\">)",
             "``` override",
             "success",
             "```",
-            "<!--</docs-sample>-->"
+            "[//]: # (</docs-sample>)"
          });
       }
 
@@ -229,7 +229,7 @@ namespace Docs.Tests.Commands
             Files =
             {
                {@"x:\sample.txt", new[] {"success"}},
-               {@"x:\target.md", new[] {"<!--<docs-sample src=\"sample.txt#language=foobar\"/>-->"}}
+               {@"x:\target.md", new[] {"[//]: # (<docs-sample src=\"sample.txt#language=foobar\"/>)"}}
             }
          };
 
@@ -237,11 +237,11 @@ namespace Docs.Tests.Commands
 
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
-            "<!--<docs-sample src=\"sample.txt#language=foobar\">-->",
+            "[//]: # (<docs-sample src=\"sample.txt#language=foobar\">)",
             "``` foobar",
             "success",
             "```",
-            "<!--</docs-sample>-->"
+            "[//]: # (</docs-sample>)"
          });
       }
    }
