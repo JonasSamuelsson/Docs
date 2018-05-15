@@ -4,8 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net461</TargetFrameworks>
     <AssemblyName>docs</AssemblyName>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <Version>1.0.1</Version>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
