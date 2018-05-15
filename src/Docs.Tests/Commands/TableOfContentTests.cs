@@ -52,5 +52,16 @@ namespace Docs.Tests.Commands
             "g"
          });
       }
+
+      [Fact]
+      public void ShouldFormatLink()
+      {
+         var formatter = new TableOfContent.LinkFormatter();
+
+         formatter.Format("plaintext").ShouldBe("[plaintext](#plaintext)");
+         formatter.Format("spaces & special chars!").ShouldBe("[spaces & special-chars](#spaces--special-chars)");
+         formatter.Format("1.23").ShouldBe("[123](#1.23)");
+         formatter.Format("12.3").ShouldBe("[123-1](#12.3)");
+      }
    }
 }

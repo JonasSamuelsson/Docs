@@ -70,26 +70,29 @@ namespace Docs.Commands
                _fileSystem.WriteFile(file, lines);
             }
          }
+      }
 
-         public class LinkFormatter
+      public class LinkFormatter
+      {
+         private readonly List<string> _history = new List<string>();
+
+         public string Format(string text)
          {
-            private readonly List<string> _history = new List<string>();
+            var chars = text
+               .ToLower()
+               .Select(c => c)
+               .Where(c => c == ' ' || c == '-' || char.IsLetterOrDigit(c));
 
-            public string Format(string text)
+            var link = string.Join(string.Empty, chars).Replace(" ", "-");
+
+            _history.Add(link);
+            var count = _history.Count(x => x == link);
+            if (count > 1)
             {
-               var chars = text
-                  .ToLower()
-                  .Select(c => c)
-                  .Where(c => c == ' ' || c == '-' || char.IsLetterOrDigit(c));
-
-               var link = string.Join(string.Empty, chars).Replace(" ", "-");
-
-               _history.Add(link);
-               var count = _history.Count(x => x == link);
-               if (count > 1) link += $"-{count - 1}";
-
-               return $"[{text}](#{link})";
+               link += $"-{count - 1}";
             }
+
+            return $"[{text}](#{link})";
          }
       }
    }
