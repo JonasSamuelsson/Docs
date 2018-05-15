@@ -32,10 +32,10 @@ namespace Docs.Tests.Utils
          new DocsElementWriter().Write(element, content)
             .ShouldBe(new[]
             {
-               " <!--<docs-xyz a=\"b\" c=\"d\">-->",
+               " [//]: # (<docs-xyz a=\"b\" c=\"d\">)",
                " foo",
                "  bar",
-               " <!--</docs-xyz>-->"
+               " [//]: # (</docs-xyz>)"
             });
       }
    }

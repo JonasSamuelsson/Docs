@@ -9,7 +9,7 @@ namespace Docs.Utils
       {
          var result = new List<string>();
 
-         var open = $"{element.Indentation}<!--<docs-{element.Name}";
+         var open = $"{element.Indentation}[//]: # (<docs-{element.Name}";
 
          if (element.Attributes.Any())
          {
@@ -19,12 +19,12 @@ namespace Docs.Utils
             }
          }
 
-         open += ">-->";
+         open += ">)";
          result.Add(open);
 
          result.AddRange(content.Select(s => element.Indentation + s));
 
-         result.Add($"{element.Indentation}<!--</docs-{element.Name}>-->");
+         result.Add($"{element.Indentation}[//]: # (</docs-{element.Name}>)");
 
          return result;
       }
