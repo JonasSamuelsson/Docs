@@ -18,7 +18,7 @@ args:
 The target file should countain a docs sample tag
 
 ```
-<!--<docs-sample src="path" />-->
+[//]: # (<docs-sample src="path" />)
 ```
 
 The source tag supports realtive, absolute & rooted paths.
@@ -35,11 +35,13 @@ Source tags containing a `id` parameter `src="sample.txt#id=foo"` would import a
 sample.txt:
 ```
 not part of sample
-<docs-sample id="foo">
+// <docs-sample id="foo">
 sample content
-</docs-sample>
+// </docs-sample>
 not part of sample
 ```
+
+Named samples are identified using pattern `{anything}<docs-sample id="{name}">{anything}` supporting a wide variety of commenting styles; `#`, `//`, `/* ... */`.
 
 ### Sample language
 
@@ -62,7 +64,7 @@ args:
   target: file or folder to generate table of content in
 ```
 
-Table of content will be generated for files containing this tag `<!--<docs-toc />-->`.
+Table of content will be generated for files containing this tag `[//]: # (<docs-toc />)`.
 
 ## Settings file
 
