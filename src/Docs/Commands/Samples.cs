@@ -68,7 +68,6 @@ namespace Docs.Commands
                      if (!samples.Any())
                         continue;
 
-                     updatedFilesCounter++;
                      console.WriteInfo($"Updating {file.RelativePath}");
 
                      foreach (var sample in samples.Reverse())
@@ -76,12 +75,14 @@ namespace Docs.Commands
                         var src = Regex.Match(sample.Attributes["src"], srcPattern);
 
                         if (!src.Success)
-                           // todo better error message
-                           throw new AppException($"Invalid src '{src}'.");
+                        {
+                           console.WriteError($"  invalid src '{src}'.");
+                           continue;
+                        }
 
                         var uri = src.Groups["uri"].Value;
 
-                        // todo - handle rooted ($/foo/bar.ext) & remote (http://...) uris
+                        // todo - remote (http://...) uris
 
                         if (uri.StartsWith(@"$/") || uri.StartsWith(@"$\"))
                         {
@@ -96,8 +97,9 @@ namespace Docs.Commands
                         }
 
                         if (!_fileSystem.FileExists(uri))
-                           // todo better error message
-                           throw new AppException($"File not found ({uri}).");
+                        {
+                           console.WriteError($"  source not found ({uri}).");
+                        }
 
                         var sampleContent = _fileSystem.ReadFile(uri);
 
@@ -146,6 +148,7 @@ namespace Docs.Commands
                      // todo only write file if its acually modified
 
                      _fileSystem.WriteFile(file.FullPath, fileContent);
+                     updatedFilesCounter++;
                   }
 
                   console.WriteInfo($"Updated {updatedFilesCounter} {(updatedFilesCounter == 1 ? "file" : "files")}.");
