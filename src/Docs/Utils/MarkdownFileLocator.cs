@@ -1,6 +1,7 @@
 ﻿using Docs.FileSystem;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Docs.Utils
 {
@@ -13,13 +14,38 @@ namespace Docs.Utils
          _fileSystem = fileSystem;
       }
 
-      public IReadOnlyList<string> GetFiles(string path)
+      public IReadOnlyList<File> GetFiles(string path)
       {
-         return _fileSystem.FileExists(path)
-            ? new[] { Path.GetFullPath(path) }
-            : _fileSystem.DirectoryExists(path)
-               ? _fileSystem.GetFiles(path, "*.md", SearchOption.AllDirectories)
-               : throw new AppException("path not found");
+         if (_fileSystem.FileExists(path))
+         {
+            var fullPath = Path.GetFullPath(path);
+            return new[] { new File
+            {
+               FullPath = fullPath ,
+               RelativePath = Path.GetFileName(fullPath)
+            } };
+         }
+
+         if (_fileSystem.DirectoryExists(path))
+         {
+            var basePath = Path.GetFullPath(path);
+            return _fileSystem
+               .GetFiles(basePath, "*.md", SearchOption.AllDirectories)
+               .Select(s => new File
+               {
+                  FullPath = s,
+                  RelativePath = s.Substring(basePath.Length)
+               })
+               .ToList();
+         }
+
+         throw new AppException("path not found");
+      }
+
+      public class File
+      {
+         public string RelativePath { get; set; }
+         public string FullPath { get; set; }
       }
    }
 }

@@ -53,7 +53,7 @@ namespace Docs.Commands
 
             foreach (var file in new MarkdownFileLocator(_fileSystem).GetFiles(path))
             {
-               var fileContent = _fileSystem.ReadFile(file);
+               var fileContent = _fileSystem.ReadFile(file.FullPath);
                var samples = elementParser.Parse(fileContent, "sample", "src");
 
                if (!samples.Any())
@@ -73,13 +73,13 @@ namespace Docs.Commands
 
                   if (uri.StartsWith(@"$/") || uri.StartsWith(@"$\"))
                   {
-                     var rootDirectory = _settingsReader.GetSamplesDirectory(file);
+                     var rootDirectory = _settingsReader.GetSamplesDirectory(file.FullPath);
                      uri = Path.Combine(rootDirectory, uri.Remove(0, 2));
                   }
 
                   if (!Path.IsPathRooted(uri))
                   {
-                     var dir = Path.GetDirectoryName(file);
+                     var dir = Path.GetDirectoryName(file.FullPath);
                      uri = Path.Combine(dir, uri);
                   }
 
@@ -133,7 +133,7 @@ namespace Docs.Commands
 
                // todo only write file if its acually modified
 
-               _fileSystem.WriteFile(file, fileContent);
+               _fileSystem.WriteFile(file.FullPath, fileContent);
 
                // todo write feedback
             }

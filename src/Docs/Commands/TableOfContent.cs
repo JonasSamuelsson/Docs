@@ -2,8 +2,11 @@
 using Docs.Utils;
 using Handyman.Extensions;
 using Microsoft.Extensions.CommandLineUtils;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Console = Docs.Utils.Console;
 
 namespace Docs.Commands
 {
@@ -42,32 +45,50 @@ namespace Docs.Commands
 
          public void Execute(string path)
          {
-            var elementParser = new DocsElementParser();
-            var headerParser = new HeaderParser();
-            var files = new MarkdownFileLocator(_fileSystem).GetFiles(path);
+            var console = new Console();
 
-            foreach (var file in files)
+            try
             {
-               var lines = _fileSystem.ReadFile(file);
-               var toc = elementParser.Parse(lines, "toc").SingleOrDefault();
+               path = Path.GetFullPath(path);
 
-               if (toc == null)
-                  continue;
+               using (console.CreateScope("Generating table of contents..."))
+               {
+                  var updatedFilesCounter = 0;
+                  var elementParser = new DocsElementParser();
+                  var headerParser = new HeaderParser();
+                  var files = new MarkdownFileLocator(_fileSystem).GetFiles(path);
 
-               var headers = headerParser.Parse(lines.Skip(toc.ElementLine));
+                  foreach (var file in files)
+                  {
+                     var lines = _fileSystem.ReadFile(file.FullPath);
+                     var toc = elementParser.Parse(lines, "toc").SingleOrDefault();
 
-               if (!headers.Any())
-                  continue;
+                     if (toc == null)
+                        continue;
 
-               lines.RemoveRange(toc.ElementLine, toc.ElementLines);
+                     updatedFilesCounter++;
+                     console.WriteInfo($"Updating {file.RelativePath}");
 
-               var minLevel = headers.Min(x => x.Level);
-               headers.ForEach(x => x.Level -= minLevel);
-               var formatter = new LinkFormatter();
-               var tocContent = headers.Select(x => $"{Enumerable.Repeat("  ", x.Level).Join()}* {formatter.Format(x.Text)}");
-               lines.InsertRange(toc.ElementLine, new DocsElementWriter().Write(toc, tocContent));
+                     var headers = headerParser.Parse(lines.Skip(toc.ElementLine));
 
-               _fileSystem.WriteFile(file, lines);
+                     lines.RemoveRange(toc.ElementLine, toc.ElementLines);
+
+                     var minLevel = headers.Min(x => x.Level);
+                     headers.ForEach(x => x.Level -= minLevel);
+                     var formatter = new LinkFormatter();
+                     var tocContent = headers.Select(x =>
+                        $"{Enumerable.Repeat("  ", x.Level).Join()}* {formatter.Format(x.Text)}");
+                     lines.InsertRange(toc.ElementLine, new DocsElementWriter().Write(toc, tocContent));
+
+                     _fileSystem.WriteFile(file.FullPath, lines);
+                  }
+
+                  console.WriteInfo($"Updated {updatedFilesCounter} {(updatedFilesCounter == 1 ? "file" : "files")}.");
+               }
+            }
+            catch (Exception exception)
+            {
+               console.WriteError(exception.Message);
             }
          }
       }
