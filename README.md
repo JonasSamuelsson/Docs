@@ -47,12 +47,15 @@ Named samples are identified using the pattern `{anything}<docs-sample id="{name
 
 ### Sample language
 
-Sample language are supported at 3 levels; inline, settings file, defaults.
+Sample language are supported at 3 levels; inline, settings file, conventions.
 
-The source tag supports a `language` parameter.
+__Inline__  
+The sample element supports a `language` attribute; `<docs-sample src="..." language="..." />`.
 
-The [settings file](#settings-file) supports file extension to language mappings as `samples.languages.{extension}:{language}`.
+__Settings file__  
+The [settings file](#settings-file) supports file extension to language mappings; `samples.languages.{extension}:{language}`.
 
+__Conventions__  
 There are some build in file extension to language mappings.
 
 ## Table of content
