@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Console = Docs.Utils.Console;
 
 namespace Docs.Commands
 {
@@ -46,96 +47,113 @@ namespace Docs.Commands
 
          public void Execute(string path)
          {
-            var srcPattern = @"^(?<uri>[^#]+)(#((id=(?<id>.+))|(lines=(?<from>\d+)((-(?<to>\d+))?)))?(language=(?<language>.+))?)?$";
+            var console = new Console();
 
-            var elementParser = new DocsElementParser();
-            var elementWriter = new DocsElementWriter();
-
-            foreach (var file in new MarkdownFileLocator(_fileSystem).GetFiles(path))
+            try
             {
-               var fileContent = _fileSystem.ReadFile(file.FullPath);
-               var samples = elementParser.Parse(fileContent, "sample", "src");
+               var srcPattern = @"^(?<uri>[^#]+)(#((id=(?<id>.+))|(lines=(?<from>\d+)((-(?<to>\d+))?)))?(language=(?<language>.+))?)?$";
 
-               if (!samples.Any())
-                  continue;
+               var elementParser = new DocsElementParser();
+               var elementWriter = new DocsElementWriter();
 
-               foreach (var sample in samples.Reverse())
+               using (console.CreateScope("Importing samples..."))
                {
-                  var src = Regex.Match(sample.Attributes["src"], srcPattern);
+                  var updatedFilesCounter = 0;
 
-                  if (!src.Success)
-                     // todo better error message
-                     throw new AppException($"Invalid src '{src}'.");
-
-                  var uri = src.Groups["uri"].Value;
-
-                  // todo - handle rooted ($/foo/bar.ext) & remote (http://...) uris
-
-                  if (uri.StartsWith(@"$/") || uri.StartsWith(@"$\"))
+                  foreach (var file in new MarkdownFileLocator(_fileSystem).GetFiles(path))
                   {
-                     var rootDirectory = _settingsReader.GetSamplesDirectory(file.FullPath);
-                     uri = Path.Combine(rootDirectory, uri.Remove(0, 2));
+                     var fileContent = _fileSystem.ReadFile(file.FullPath);
+                     var samples = elementParser.Parse(fileContent, "sample", "src");
+
+                     if (!samples.Any())
+                        continue;
+
+                     updatedFilesCounter++;
+                     console.WriteInfo($"Updating {file.RelativePath}");
+
+                     foreach (var sample in samples.Reverse())
+                     {
+                        var src = Regex.Match(sample.Attributes["src"], srcPattern);
+
+                        if (!src.Success)
+                           // todo better error message
+                           throw new AppException($"Invalid src '{src}'.");
+
+                        var uri = src.Groups["uri"].Value;
+
+                        // todo - handle rooted ($/foo/bar.ext) & remote (http://...) uris
+
+                        if (uri.StartsWith(@"$/") || uri.StartsWith(@"$\"))
+                        {
+                           var rootDirectory = _settingsReader.GetSamplesDirectory(file.FullPath);
+                           uri = Path.Combine(rootDirectory, uri.Remove(0, 2));
+                        }
+
+                        if (!Path.IsPathRooted(uri))
+                        {
+                           var dir = Path.GetDirectoryName(file.FullPath);
+                           uri = Path.Combine(dir, uri);
+                        }
+
+                        if (!_fileSystem.FileExists(uri))
+                           // todo better error message
+                           throw new AppException($"File not found ({uri}).");
+
+                        var sampleContent = _fileSystem.ReadFile(uri);
+
+                        var idGroup = src.Groups["id"];
+                        if (idGroup.Success)
+                        {
+                           // todo error handling
+                           var sampleElement = elementParser
+                              .Parse(sampleContent, "sample", "id")
+                              .Single(x => x.Attributes["id"].Equals(idGroup.Value, StringComparison.OrdinalIgnoreCase));
+
+                           sampleContent = sampleContent
+                              .Skip(sampleElement.ContentLine)
+                              .Take(sampleElement.ContentLines)
+                              .ToList();
+                        }
+
+                        var fromGroup = src.Groups["from"];
+                        if (fromGroup.Success)
+                        {
+                           // todo error handling, count/to to big/small
+                           var from = int.Parse(fromGroup.Value) - 1;
+                           var toGroup = src.Groups["to"];
+                           var count = toGroup.Success
+                              ? int.Parse(toGroup.Value) - from
+                              : 1;
+
+                           sampleContent = sampleContent
+                              .Skip(from)
+                              .Take(count)
+                              .ToList();
+                        }
+
+                        var languageGroup = src.Groups["language"];
+                        var language = languageGroup.Success
+                           ? languageGroup.Value
+                           : GetLanguage(uri);
+
+                        sampleContent.Insert(0, $"``` {language}".TrimEnd());
+                        sampleContent.Add("```");
+
+                        fileContent.RemoveRange(sample.ElementLine, sample.ElementLines);
+                        fileContent.InsertRange(sample.ElementLine, elementWriter.Write(sample, sampleContent));
+                     }
+
+                     // todo only write file if its acually modified
+
+                     _fileSystem.WriteFile(file.FullPath, fileContent);
                   }
 
-                  if (!Path.IsPathRooted(uri))
-                  {
-                     var dir = Path.GetDirectoryName(file.FullPath);
-                     uri = Path.Combine(dir, uri);
-                  }
-
-                  if (!_fileSystem.FileExists(uri))
-                     // todo better error message
-                     throw new AppException($"File not found ({uri}).");
-
-                  var sampleContent = _fileSystem.ReadFile(uri);
-
-                  var idGroup = src.Groups["id"];
-                  if (idGroup.Success)
-                  {
-                     // todo error handling
-                     var sampleElement = elementParser
-                        .Parse(sampleContent, "sample", "id")
-                        .Single(x => x.Attributes["id"].Equals(idGroup.Value, StringComparison.OrdinalIgnoreCase));
-
-                     sampleContent = sampleContent
-                        .Skip(sampleElement.ContentLine)
-                        .Take(sampleElement.ContentLines)
-                        .ToList();
-                  }
-
-                  var fromGroup = src.Groups["from"];
-                  if (fromGroup.Success)
-                  {
-                     // todo error handling, count/to to big/small
-                     var from = int.Parse(fromGroup.Value) - 1;
-                     var toGroup = src.Groups["to"];
-                     var count = toGroup.Success
-                        ? int.Parse(toGroup.Value) - from
-                        : 1;
-
-                     sampleContent = sampleContent
-                        .Skip(from)
-                        .Take(count)
-                        .ToList();
-                  }
-
-                  var languageGroup = src.Groups["language"];
-                  var language = languageGroup.Success
-                     ? languageGroup.Value
-                     : GetLanguage(uri);
-
-                  sampleContent.Insert(0, $"``` {language}".TrimEnd());
-                  sampleContent.Add("```");
-
-                  fileContent.RemoveRange(sample.ElementLine, sample.ElementLines);
-                  fileContent.InsertRange(sample.ElementLine, elementWriter.Write(sample, sampleContent));
+                  console.WriteInfo($"Updated {updatedFilesCounter} {(updatedFilesCounter == 1 ? "file" : "files")}.");
                }
-
-               // todo only write file if its acually modified
-
-               _fileSystem.WriteFile(file.FullPath, fileContent);
-
-               // todo write feedback
+            }
+            catch (Exception exception)
+            {
+               console.WriteError(exception.Message);
             }
          }
 
