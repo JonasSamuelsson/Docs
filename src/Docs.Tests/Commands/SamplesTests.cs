@@ -23,7 +23,7 @@ namespace Docs.Tests.Commands
             }
          };
 
-         new Samples.Worker(fs).Execute(@"x:\target.md");
+         new Samples.Worker(TestConsole.Instance, fs).Execute(@"x:\target.md");
 
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
@@ -61,7 +61,7 @@ namespace Docs.Tests.Commands
             }
          };
 
-         new Samples.Worker(fs).Execute(@"x:\target.md");
+         new Samples.Worker(TestConsole.Instance, fs).Execute(@"x:\target.md");
 
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
@@ -97,7 +97,7 @@ namespace Docs.Tests.Commands
             }
          };
 
-         new Samples.Worker(fs).Execute(@"x:\target.md");
+         new Samples.Worker(TestConsole.Instance, fs).Execute(@"x:\target.md");
 
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
@@ -133,7 +133,7 @@ namespace Docs.Tests.Commands
             }
          };
 
-         new Samples.Worker(fs).Execute(@"x:\target.md");
+         new Samples.Worker(TestConsole.Instance, fs).Execute(@"x:\target.md");
 
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
@@ -160,7 +160,7 @@ namespace Docs.Tests.Commands
             }
          };
 
-         new Samples.Worker(fs).Execute(@"x:\root\child\target.md");
+         new Samples.Worker(TestConsole.Instance, fs).Execute(@"x:\root\child\target.md");
 
          fs.Files[@"x:\root\child\target.md"].ShouldBe(new[]
          {
@@ -184,7 +184,7 @@ namespace Docs.Tests.Commands
             }
          };
 
-         new Samples.Worker(fs).Execute(@"x:\target.md");
+         new Samples.Worker(TestConsole.Instance, fs).Execute(@"x:\target.md");
 
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
@@ -209,7 +209,7 @@ namespace Docs.Tests.Commands
             }
          };
 
-         new Samples.Worker(fs).Execute(@"x:\target.md");
+         new Samples.Worker(TestConsole.Instance, fs).Execute(@"x:\target.md");
 
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
@@ -229,15 +229,15 @@ namespace Docs.Tests.Commands
             Files =
             {
                {@"x:\sample.txt", new[] {"success"}},
-               {@"x:\target.md", new[] {"[//]: # (<docs-sample src=\"sample.txt#language=foobar\"/>)"}}
+               {@"x:\target.md", new[] {"[//]: # (<docs-sample src=\"sample.txt\" language=\"foobar\" />)"}}
             }
          };
 
-         new Samples.Worker(fs).Execute(@"x:\target.md");
+         new Samples.Worker(TestConsole.Instance, fs).Execute(@"x:\target.md");
 
          fs.Files[@"x:\target.md"].ShouldBe(new[]
          {
-            "[//]: # (<docs-sample src=\"sample.txt#language=foobar\">)",
+            "[//]: # (<docs-sample src=\"sample.txt\" language=\"foobar\">)",
             "``` foobar",
             "success",
             "```",

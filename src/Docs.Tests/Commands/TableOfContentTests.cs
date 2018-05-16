@@ -28,7 +28,7 @@ namespace Docs.Tests.Commands
 
          var fs = new TestFileSystem { Files = { { @"x:\toc.md", content } } };
 
-         new TableOfContent.Worker(fs).Execute(@"x:\toc.md");
+         new TableOfContent.Worker(TestConsole.Instance, fs).Execute(@"x:\toc.md");
 
          fs.Files[@"x:\toc.md"].ShouldBe(new[]
          {
@@ -59,9 +59,9 @@ namespace Docs.Tests.Commands
          var formatter = new TableOfContent.LinkFormatter();
 
          formatter.Format("plaintext").ShouldBe("[plaintext](#plaintext)");
-         formatter.Format("spaces & special chars!").ShouldBe("[spaces & special-chars](#spaces--special-chars)");
-         formatter.Format("1.23").ShouldBe("[123](#1.23)");
-         formatter.Format("12.3").ShouldBe("[123-1](#12.3)");
+         formatter.Format("spaces & special chars!").ShouldBe("[spaces & special chars!](#spaces--special-chars)");
+         formatter.Format("1.23").ShouldBe("[1.23](#123)");
+         formatter.Format("12.3").ShouldBe("[12.3](#123-1)");
       }
    }
 }

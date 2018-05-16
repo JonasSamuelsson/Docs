@@ -58,23 +58,47 @@ namespace Docs.Tests.Utils
             "[//]: # (<docs-foo a=\"b\" c=\"d\" />)"
          };
 
-         var element = new DocsElementParser().Parse(lines, "foo").Single();
+         var element = new DocsElementParser().Parse(lines, "foo", new DocsElementParser.AttributeOptions
+         {
+            Required = new[] { "a" },
+            Optional = new[] { "c" }
+         }).Single();
 
          element.Attributes["a"].ShouldBe("b");
          element.Attributes["c"].ShouldBe("d");
       }
 
       [Fact]
-      public void ShouldFindElementWithRequiredAttribute()
+      public void ShouldThrowIfRequiredAttributeIsMissing()
       {
          var lines = new[]
          {
-            "[//]: # (<docs-foo />)",
-            "[//]: # (<docs-foo a=\"b\" />)",
-            "[//]: # (<docs-foo b=\"c\" />)"
+            "[//]: # (<docs-foo />)"
          };
 
-         new DocsElementParser().Parse(lines, "foo", "a").Single().Attributes["a"].ShouldBe("b");
+         Should.Throw<AppException>(() => new DocsElementParser().Parse(lines, "foo", new DocsElementParser.AttributeOptions { Required = new[] { "a" } }));
+      }
+
+      [Fact]
+      public void ShouldThrowIfSameAttributeIsDefinedTwice()
+      {
+         var lines = new[]
+         {
+            "[//]: # (<docs-foo a=\"b\" a=\"c\" />)"
+         };
+
+         Should.Throw<AppException>(() => new DocsElementParser().Parse(lines, "foo", new DocsElementParser.AttributeOptions { Required = new[] { "a" } }));
+      }
+
+      [Fact]
+      public void ShouldThrowIfUndefinedAttributeIsFound()
+      {
+         var lines = new[]
+         {
+            "[//]: # (<docs-foo a=\"b\" />)"
+         };
+
+         Should.Throw<AppException>(() => new DocsElementParser().Parse(lines, "foo"));
       }
    }
 }

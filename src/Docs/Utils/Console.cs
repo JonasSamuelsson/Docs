@@ -4,7 +4,14 @@ using System.Threading.Tasks;
 
 namespace Docs.Utils
 {
-   public class Console
+   public interface IConsole
+   {
+      IDisposable CreateScope(string text = null);
+      void WriteInfo(string text);
+      void WriteError(string text);
+   }
+
+   public class Console : IConsole
    {
       private static readonly string Characters = @"-\|/";
       private int _index = 0;

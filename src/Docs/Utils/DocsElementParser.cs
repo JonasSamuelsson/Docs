@@ -1,3 +1,4 @@
+using Handyman.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,25 +8,25 @@ namespace Docs.Utils
 {
    public class DocsElementParser
    {
+      private const string OpenPattern = @"^(?<indentation>\s*)\[\/\/]: # \(<docs-(?<name>[a-z]+)(\s+(?<attribute>[a-z]+=""[^""]*""))*\s*(?<selfclosing>/)?>\)\s*$";
+      private const string AttributePattern = @"(?<name>[a-z]+)=""(?<value>[^""]*)""";
+      private const string ClosePattern = @"^\s*\[\/\/]: # \(</docs-(?<name>[a-z]+)\s*>\)\s*$";
+      private const RegexOptions RegexOptions = System.Text.RegularExpressions.RegexOptions.IgnoreCase;
+      private const StringComparison StringComparison = System.StringComparison.OrdinalIgnoreCase;
+
       public IReadOnlyList<DocsElement> Parse(IReadOnlyList<string> lines, string elementName)
       {
-         return Parse(lines, elementName, null);
+         return Parse(lines, elementName, new AttributeOptions());
       }
 
-      public IReadOnlyList<DocsElement> Parse(IReadOnlyList<string> lines, string elementName, string attributeName)
+      public IReadOnlyList<DocsElement> Parse(IReadOnlyList<string> lines, string elementName, AttributeOptions attributeOptions)
       {
-         var openPattern = @"^(?<indentation>\s*)\[\/\/]: # \(<docs-(?<name>[a-z]+)(\s+(?<attribute>[a-z]+=""[^""]*""))*\s*(?<selfclosing>/)?>\)\s*$";
-         var attributePattern = @"(?<name>[a-z]+)=""(?<value>[^""]*)""";
-         var closePattern = @"^\s*\[\/\/]: # \(</docs-(?<name>[a-z]+)\s*>\)\s*$";
-         var options = RegexOptions.IgnoreCase;
-         var comparison = StringComparison.OrdinalIgnoreCase;
-
          var elements = new List<DocsElement>();
 
          for (var i = 0; i < lines.Count; i++)
          {
             var line = lines[i];
-            var match = Regex.Match(line, openPattern, options);
+            var match = Regex.Match(line, OpenPattern, RegexOptions);
 
             if (match.Success)
             {
@@ -34,12 +35,24 @@ namespace Docs.Utils
                if (!name.Equals(elementName))
                   continue;
 
-               var attributes = match.Groups["attribute"].Captures.Cast<Capture>()
-                  .Select(x => Regex.Match(x.Value, attributePattern, options))
-                  .ToDictionary(m => m.Groups["name"].Value, m => m.Groups["value"].Value);
+               var attributes = new Dictionary<string, string>();
 
-               if (attributeName != null && !attributes.ContainsKey(attributeName))
-                  continue;
+               foreach (var attribute in GetAttributes(match))
+               {
+                  var key = attribute.Key;
+
+                  if (!attributeOptions.All.Contains(key, StringComparer.OrdinalIgnoreCase))
+                     throw new AppException($"invalid attribute '{key}'.");
+
+                  if (!attributes.TryAdd(key, attribute.Value))
+                     throw new AppException($"duplicate attribute '{key}'.");
+               }
+
+               var missingAttributes = attributeOptions.Required
+                  .Where(x => !attributes.ContainsKey(x))
+                  .ToList();
+               if (missingAttributes.Any())
+                  throw new AppException($"missing attribute(s) {string.Join(", ", missingAttributes)}");
 
                var element = new DocsElement
                {
@@ -62,9 +75,9 @@ namespace Docs.Utils
                      throw new AppException($"element {element.Name}@{element.ElementLine} : closing tag not found");
 
                   line = lines[i];
-                  match = Regex.Match(line, closePattern, options);
+                  match = Regex.Match(line, ClosePattern, RegexOptions);
 
-                  if (match.Success && match.Groups["name"].Value.Equals(element.Name, comparison))
+                  if (match.Success && match.Groups["name"].Value.Equals(element.Name, StringComparison))
                      break;
                }
 
@@ -74,6 +87,21 @@ namespace Docs.Utils
          }
 
          return elements;
+      }
+
+      private static IEnumerable<(string Key, string Value)> GetAttributes(Match match)
+      {
+         return match.Groups["attribute"].Captures.Cast<Capture>()
+            .Select(x => Regex.Match(x.Value, AttributePattern, RegexOptions))
+            .Select(m => (Key: m.Groups["name"].Value.ToLower(), Value: m.Groups["value"].Value));
+      }
+
+      public class AttributeOptions
+      {
+         public IEnumerable<string> Required { get; set; } = Enumerable.Empty<string>();
+         public IEnumerable<string> Optional { get; set; } = Enumerable.Empty<string>();
+
+         public IEnumerable<string> All => Required.Concat(Optional);
       }
    }
 }

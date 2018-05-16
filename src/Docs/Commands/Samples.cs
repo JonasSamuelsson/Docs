@@ -32,43 +32,44 @@ namespace Docs.Commands
 
       public class Worker
       {
+         private readonly IConsole _console;
          private readonly IFileSystem _fileSystem;
          private readonly SettingsReader _settingsReader;
 
-         public Worker() : this(new FileSystem.FileSystem())
+         public Worker() : this(new Console(), new FileSystem.FileSystem())
          {
          }
 
-         public Worker(IFileSystem fileSystem)
+         public Worker(IConsole console, IFileSystem fileSystem)
          {
+            _console = console;
             _fileSystem = fileSystem;
             _settingsReader = new SettingsReader(fileSystem);
          }
 
          public void Execute(string path)
          {
-            var console = new Console();
-
             try
             {
-               var srcPattern = @"^(?<uri>[^#]+)(#((id=(?<id>.+))|(lines=(?<from>\d+)((-(?<to>\d+))?)))?(language=(?<language>.+))?)?$";
+               var srcPattern = @"^(?<uri>[^#]+)(#((id=(?<id>.+))|(lines=(?<from>\d+)((-(?<to>\d+))?)))?)?$";
 
                var elementParser = new DocsElementParser();
                var elementWriter = new DocsElementWriter();
 
-               using (console.CreateScope("Importing samples..."))
+               using (_console.CreateScope("Importing samples..."))
                {
                   var updatedFilesCounter = 0;
 
                   foreach (var file in new MarkdownFileLocator(_fileSystem).GetFiles(path))
                   {
                      var fileContent = _fileSystem.ReadFile(file.FullPath);
-                     var samples = elementParser.Parse(fileContent, "sample", "src");
+                     var attributeOptions = new DocsElementParser.AttributeOptions { Required = new[] { "src" }, Optional = new[] { "language" } };
+                     var samples = elementParser.Parse(fileContent, "sample", attributeOptions);
 
                      if (!samples.Any())
                         continue;
 
-                     console.WriteInfo($"Updating {file.RelativePath}");
+                     _console.WriteInfo($"Updating {file.RelativePath}");
 
                      foreach (var sample in samples.Reverse())
                      {
@@ -76,7 +77,7 @@ namespace Docs.Commands
 
                         if (!src.Success)
                         {
-                           console.WriteError($"  invalid src '{src}'.");
+                           _console.WriteError($"  invalid src '{src}'.");
                            continue;
                         }
 
@@ -98,7 +99,7 @@ namespace Docs.Commands
 
                         if (!_fileSystem.FileExists(uri))
                         {
-                           console.WriteError($"  source not found ({uri}).");
+                           _console.WriteError($"  source not found ({uri}).");
                         }
 
                         var sampleContent = _fileSystem.ReadFile(uri);
@@ -108,7 +109,7 @@ namespace Docs.Commands
                         {
                            // todo error handling
                            var sampleElement = elementParser
-                              .Parse(sampleContent, "sample", "id")
+                              .Parse(sampleContent, "sample", new DocsElementParser.AttributeOptions { Required = new[] { "id" } })
                               .Single(x => x.Attributes["id"].Equals(idGroup.Value, StringComparison.OrdinalIgnoreCase));
 
                            sampleContent = sampleContent
@@ -133,9 +134,8 @@ namespace Docs.Commands
                               .ToList();
                         }
 
-                        var languageGroup = src.Groups["language"];
-                        var language = languageGroup.Success
-                           ? languageGroup.Value
+                        var language = sample.Attributes.TryGetValue("language", out var value)
+                           ? value
                            : GetLanguage(uri);
 
                         sampleContent.Insert(0, $"``` {language}".TrimEnd());
@@ -151,12 +151,12 @@ namespace Docs.Commands
                      updatedFilesCounter++;
                   }
 
-                  console.WriteInfo($"Updated {updatedFilesCounter} {(updatedFilesCounter == 1 ? "file" : "files")}.");
+                  _console.WriteInfo($"Updated {updatedFilesCounter} {(updatedFilesCounter == 1 ? "file" : "files")}.");
                }
             }
             catch (Exception exception)
             {
-               console.WriteError(exception.Message);
+               _console.WriteError(exception.Message);
             }
          }
 

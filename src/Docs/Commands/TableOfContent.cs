@@ -32,26 +32,26 @@ namespace Docs.Commands
 
       public class Worker
       {
+         private readonly IConsole _console;
          private readonly IFileSystem _fileSystem;
 
-         public Worker() : this(new FileSystem.FileSystem())
+         public Worker() : this(new Console(), new FileSystem.FileSystem())
          {
          }
 
-         public Worker(IFileSystem fileSystem)
+         public Worker(IConsole console, IFileSystem fileSystem)
          {
+            _console = console;
             _fileSystem = fileSystem;
          }
 
          public void Execute(string path)
          {
-            var console = new Console();
-
             try
             {
                path = Path.GetFullPath(path);
 
-               using (console.CreateScope("Generating table of contents..."))
+               using (_console.CreateScope("Generating table of contents..."))
                {
                   var updatedFilesCounter = 0;
                   var elementParser = new DocsElementParser();
@@ -67,7 +67,7 @@ namespace Docs.Commands
                         continue;
 
                      updatedFilesCounter++;
-                     console.WriteInfo($"Updating {file.RelativePath}");
+                     _console.WriteInfo($"Updating {file.RelativePath}");
 
                      var headers = headerParser.Parse(lines.Skip(toc.ElementLine));
 
@@ -83,12 +83,12 @@ namespace Docs.Commands
                      _fileSystem.WriteFile(file.FullPath, lines);
                   }
 
-                  console.WriteInfo($"Updated {updatedFilesCounter} {(updatedFilesCounter == 1 ? "file" : "files")}.");
+                  _console.WriteInfo($"Updated {updatedFilesCounter} {(updatedFilesCounter == 1 ? "file" : "files")}.");
                }
             }
             catch (Exception exception)
             {
-               console.WriteError(exception.Message);
+               _console.WriteError(exception.Message);
             }
          }
       }

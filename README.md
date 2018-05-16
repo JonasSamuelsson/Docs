@@ -28,6 +28,8 @@ The root folder is retrived from setting `samples.dir` in the [settings file](#s
 
 ### Parameters
 
+Source tag containing a `lines` parameter `src="sample.txt#lines=2"` would only import line 2.
+
 Source tag containing a `lines` parameter `src="sample.txt#lines=3-5"` would only import lines 3 to 5.
 
 Source tags containing a `id` parameter `src="sample.txt#id=foo"` would import a sample named `foo`.
@@ -41,7 +43,7 @@ sample content
 not part of sample
 ```
 
-Named samples are identified using pattern `{anything}<docs-sample id="{name}">{anything}` supporting a wide variety of commenting styles; `#`, `//`, `/* ... */`.
+Named samples are identified using the pattern `{anything}<docs-sample id="{name}">{anything}` supporting a wide variety of commenting styles; `#`, `//`, `/* ... */`, etc.
 
 ### Sample language
 

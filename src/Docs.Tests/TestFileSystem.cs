@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace Docs.Tests
 {
+
    public class TestFileSystem : IFileSystem
    {
       public Dictionary<string, IEnumerable<string>> Files { get; set; } = new Dictionary<string, IEnumerable<string>>(StringComparer.OrdinalIgnoreCase);
